@@ -76,7 +76,10 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
 RUN apt-get update && \
-    apt-get install -y jq tmux ansible nano python-pip python3-pip default-jre default-jdk maven build-essential python3-dev python-dev nodejs zsh gcc g++ make yarn zip unzip php-cli php-zip php-xml php-gd php-opcache php-mbstring && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y jq tmux software-properties-common nano && \
+    apt-add-repository --yes --update ppa:ansible/ansible && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y ansible python-pip python3-pip default-jre default-jdk maven build-essential python3-dev python-dev python3-winrm nodejs zsh gcc g++ make yarn zip unzip php-cli php-zip php-xml php-gd php-opcache php-mbstring && \
     rm -rf /var/lib/apt/lists/*
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
