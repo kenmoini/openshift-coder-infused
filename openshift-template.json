@@ -1,0 +1,214 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "workshop-coder-ide",
+        "annotations": {
+            "iconClass": "icon-coder-ide",
+            "description": "An in-browser IDE for Workshops running on OpenShift, using Coder or VS Code.",
+            "displayName": "Workshop IDE",
+            "openshift.io/display-name": "Workshop IDE"
+        }
+    },
+    "parameters": [
+        {
+            "name": "PASSWORD",
+            "value": "Tiger123!",
+            "required": true
+        },
+        {
+            "name": "SESSION_NAME",
+            "value": "coder-ide",
+            "required": true
+        },
+        {
+            "name": "NAME_PREFIX",
+            "value": "",
+            "required": false
+        },
+        {
+            "name": "IDE_IMAGE",
+            "value": "kenmoini/openshift-coder-infused:latest",
+            "required": true
+        },
+        {
+            "name": "VOLUME_CAPACITY",
+            "value": "2Gi",
+            "required": true
+        }
+    ],
+    "objects": [
+        {
+            "kind": "PersistentVolumeClaim",
+            "apiVersion": "v1",
+            "metadata": {
+                "labels": {
+                    "app": "${NAME_PREFIX}${SESSION_NAME}"
+                },
+                "name": "${NAME_PREFIX}${SESSION_NAME}-home-pv"
+            },
+            "spec": {
+                "accessModes": [
+                    "ReadWriteOnce"
+                ],
+                "resources": {
+                    "requests": {
+                        "storage": "${VOLUME_CAPACITY}"
+                    }
+                }
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "${NAME_PREFIX}${SESSION_NAME}",
+                "labels": {
+                    "app": "${NAME_PREFIX}${SESSION_NAME}"
+                }
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": true
+                },
+                "tags": [
+                    {
+                        "name": "latest",
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "${IDE_IMAGE}"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "${NAME_PREFIX}${SESSION_NAME}",
+                "labels": {
+                    "app": "${NAME_PREFIX}${SESSION_NAME}"
+                }
+            },
+            "spec": {
+                "strategy": {
+                    "type": "Recreate"
+                },
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "type": "ImageChange",
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "coder-ide"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "${NAME_PREFIX}${SESSION_NAME}:latest"
+                            }
+                        }
+                    }
+                ],
+                "replicas": 1,
+                "selector": {
+                    "app": "${NAME_PREFIX}${SESSION_NAME}",
+                    "deploymentconfig": "${NAME_PREFIX}${SESSION_NAME}"
+                },
+                "template": {
+                    "metadata": {
+                        "labels": {
+                            "app": "${NAME_PREFIX}${SESSION_NAME}",
+                            "deploymentconfig": "${NAME_PREFIX}${SESSION_NAME}"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "coder-ide",
+                                "ports": [
+                                    {
+                                        "containerPort": 8080,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "env": [
+                                    {
+                                        "name": "PASSWORD",
+                                        "value": "${PASSWORD}"
+                                    }
+                                ],
+                                "volumeMounts": [
+                                    {
+                                        "mountPath": "/home/coder",
+                                        "name": "coder-workspace"
+                                    }
+                                ]
+                            }
+                        ],
+                        "volumes": [
+                            {
+                                "name": "coder-workspace",
+                                "persistentVolumeClaim": {
+                                    "claimName": "${NAME_PREFIX}${SESSION_NAME}-home-pv"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "${NAME_PREFIX}${SESSION_NAME}",
+                "labels": {
+                    "app": "${NAME_PREFIX}${SESSION_NAME}"
+                }
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "8080-tcp",
+                        "protocol": "TCP",
+                        "port": 8080,
+                        "targetPort": 8080
+                    }
+                ],
+                "selector": {
+                    "app": "${NAME_PREFIX}${SESSION_NAME}",
+                    "deploymentconfig": "${NAME_PREFIX}${SESSION_NAME}"
+                }
+            }
+        },
+        {
+            "kind": "Route",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "${NAME_PREFIX}${SESSION_NAME}",
+                "labels": {
+                    "app": "${NAME_PREFIX}${SESSION_NAME}"
+                }
+            },
+            "spec": {
+                "host": "",
+                "to": {
+                    "kind": "Service",
+                    "name": "${NAME_PREFIX}${SESSION_NAME}",
+                    "weight": 100
+                },
+                "port": {
+                    "targetPort": "8080-tcp"
+                },
+                "tls": {
+                    "termination": "edge",
+                    "insecureEdgeTerminationPolicy": "Redirect"
+                }
+            }
+        }
+    ]
+}

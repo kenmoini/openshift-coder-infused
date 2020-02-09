@@ -2,11 +2,11 @@ FROM codercom/code-server:latest
 
 USER root
 
-ENV cacheBusta=1
+ENV cacheBusta=5
 
-LABEL io.k8s.display-name="Coder Server" \
+LABEL io.k8s.display-name="Workshop IDE" \
       io.openshift.expose-services="8080:http" \
-      io.openshift.tags="builder,coder,vscode" \
+      io.openshift.tags="builder,coder,ide,vscode" \
       io.openshift.s2i.scripts-url=image:///usr/libexec/s2i
 
 # Install OpenShift clients.
@@ -76,7 +76,6 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y jq tmux ansible nano python-pip python3-pip default-jre default-jdk maven build-essential python3-dev python-dev nodejs zsh gcc g++ make yarn zip unzip php-cli php-zip php-xml php-gd php-opcache php-mbstring && \
     rm -rf /var/lib/apt/lists/*
 
