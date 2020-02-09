@@ -106,7 +106,7 @@ COPY config/bash_profile /home/coder/.bash_profile
 
 USER root
 
-ENV cacheBusta=2
+ENV cacheBusta=3
 
 COPY run.sh /opt/run.sh
 
