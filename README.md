@@ -7,7 +7,7 @@ It has a few extra binaries stuffed in there to make things generally helpful, s
 - Composer
 - Golang
 - NodeJS
-- OpenJDK
+- OpenJDK & Maven
 - oc, odo, kubectl
 - Python 2 & PIP
 - Python 3 & PIP
