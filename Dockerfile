@@ -4,6 +4,11 @@ USER root
 
 ENV cacheBusta=1
 
+LABEL io.k8s.display-name="Coder Server" \
+      io.openshift.expose-services="8080:http" \
+      io.openshift.tags="builder,coder,vscode" \
+      io.openshift.s2i.scripts-url=image:///usr/libexec/s2i
+
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
     curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
@@ -17,7 +22,6 @@ RUN apt-get update && \
 RUN curl -O https://dl.google.com/go/go1.13.7.linux-amd64.tar.gz && \
     tar -xvf go1.13.7.linux-amd64.tar.gz && \
     mv go /usr/local
-
 
 # Install fonts for root user
 
@@ -87,9 +91,10 @@ RUN curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes
 ENV LC_ALL=en_US.UTF-8 \
 	SHELL=/bin/zsh
 
-RUN chsh --shell $(which zsh) coder
-
 USER coder
+
+ENV LC_ALL=en_US.UTF-8 \
+	SHELL=/bin/zsh
 
 RUN git clone https://github.com/powerline/fonts.git --depth=1 && \
     cd fonts && ./install.sh && cd .. && rm -rf fonts/ && \
@@ -99,4 +104,14 @@ RUN git clone https://github.com/powerline/fonts.git --depth=1 && \
 COPY config/zshrc /home/coder/.zshrc
 COPY config/bash_profile /home/coder/.bash_profile
 
+USER root
+
+ENV cacheBusta=2
+
+COPY run.sh /opt/run.sh
+
+RUN chsh --shell $(which zsh) coder && chmod g+w /etc/passwd && chgrp -Rf root /home/coder && chmod -Rf g+w /home/coder && chmod +x /opt/run.sh
+
 USER 1000
+
+ENTRYPOINT ["/opt/run.sh"]
