@@ -9,27 +9,6 @@ LABEL io.k8s.display-name="Coder Server" \
       io.openshift.tags="builder,coder,vscode" \
       io.openshift.s2i.scripts-url=image:///usr/libexec/s2i
 
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
-    curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y jq tmux ansible nano python-pip python3-pip default-jre default-jdk maven build-essential python3-dev python-dev nodejs zsh gcc g++ make yarn zip unzip && \
-    rm -rf /var/lib/apt/lists/*
-
-
-RUN curl -O https://dl.google.com/go/go1.13.7.linux-amd64.tar.gz && \
-    tar -xvf go1.13.7.linux-amd64.tar.gz && \
-    mv go /usr/local
-
-# Install fonts for root user
-
-RUN git clone https://github.com/powerline/fonts.git --depth=1 && \
-    cd fonts && ./install.sh && cd .. && rm -rf fonts/ && \
-    pip3 install thefuck && \
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
 # Install OpenShift clients.
 
 RUN curl -s -o /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v3/clients/3.10.176/linux/oc.tar.gz && \
@@ -88,13 +67,38 @@ RUN curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes
     mv /usr/local/bin/kubectl /usr/local/bin/kubectl-1.12 && \
     chmod +x /usr/local/bin/kubectl-1.12
 
+RUN curl -O https://dl.google.com/go/go1.13.7.linux-amd64.tar.gz && \
+    tar -xvf go1.13.7.linux-amd64.tar.gz && \
+    mv go /usr/local
+
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+    curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y jq tmux ansible nano python-pip python3-pip default-jre default-jdk maven build-essential python3-dev python-dev nodejs zsh gcc g++ make yarn zip unzip php-cli php-zip php-xml php-gd php-opcache php-mbstring && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php composer-setup.php && \
+    php -r "unlink('composer-setup.php');" && \
+    mv composer.phar /usr/local/bin/composer
+
+# Install fonts for root user
+RUN git clone https://github.com/powerline/fonts.git --depth=1 && \
+    cd fonts && ./install.sh && cd .. && rm -rf fonts/ && \
+    pip3 install thefuck && \
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
 ENV LC_ALL=en_US.UTF-8 \
 	SHELL=/bin/zsh
 
 USER coder
 
 ENV LC_ALL=en_US.UTF-8 \
-	SHELL=/bin/zsh
+	SHELL=/bin/zsh \
+    HOME=/home/coder
 
 RUN git clone https://github.com/powerline/fonts.git --depth=1 && \
     cd fonts && ./install.sh && cd .. && rm -rf fonts/ && \
