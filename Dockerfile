@@ -2,11 +2,11 @@ FROM codercom/code-server:latest
 
 USER root
 
-ENV cacheBusta=5
+ENV cacheBusta=510
 
 LABEL io.k8s.display-name="Workshop IDE" \
       io.openshift.expose-services="8080:http" \
-      io.openshift.tags="builder,coder,ide,vscode" \
+      io.openshift.tags="builder,coder,ide,vscode,workshop" \
       io.openshift.s2i.scripts-url=image:///usr/libexec/s2i
 
 # Install OpenShift clients.
@@ -67,6 +67,8 @@ RUN curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes
     mv /usr/local/bin/kubectl /usr/local/bin/kubectl-1.12 && \
     chmod +x /usr/local/bin/kubectl-1.12
 
+ENV cacheBustaMid=1
+
 RUN curl -O https://dl.google.com/go/go1.13.7.linux-amd64.tar.gz && \
     tar -xvf go1.13.7.linux-amd64.tar.gz && \
     mv go /usr/local
@@ -91,7 +93,8 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
 RUN git clone https://github.com/powerline/fonts.git --depth=1 && \
     cd fonts && ./install.sh && cd .. && rm -rf fonts/ && \
     pip3 install thefuck && \
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \
+    mkdir /opt/home_skel
 
 ENV LC_ALL=en_US.UTF-8 \
 	SHELL=/bin/zsh
@@ -105,14 +108,19 @@ ENV LC_ALL=en_US.UTF-8 \
 RUN git clone https://github.com/powerline/fonts.git --depth=1 && \
     cd fonts && ./install.sh && cd .. && rm -rf fonts/ && \
     pip3 install thefuck && \
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \
+    cp -R /home/coder/.local /opt/home_skel && \
+    cp -R /home/coder/.oh-my-zsh /opt/home_skel && \
+    cp /home/coder/.bashrc /opt/home_skel
 
 COPY config/zshrc /home/coder/.zshrc
+COPY config/zshrc /opt/home_skel/.zshrc
 COPY config/bash_profile /home/coder/.bash_profile
+COPY config/bash_profile /opt/home_skel/.bash_profile
 
 USER root
 
-ENV cacheBusta=5
+ENV cacheBustaLast=50
 
 COPY run.sh /opt/run.sh
 
