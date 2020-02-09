@@ -1,0 +1,11 @@
+export GOPATH=$HOME/go
+export PATH=$HOME/bin:$HOME/.composer/vendor/bin:$HOME/.local/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin:$GOPATH/bin:$PATH
+export ZSH="/home/coder/.oh-my-zsh"
+
+eval $(thefuck --alias)
+
+ZSH_THEME="agnoster"
+DISABLE_AUTO_UPDATE="true"
+ZSH_DISABLE_COMPFIX="true"
+plugins=(git ansible kubectl sudo thefuck)
+source $ZSH/oh-my-zsh.sh
