@@ -94,7 +94,7 @@ RUN git clone https://github.com/powerline/fonts.git --depth=1 && \
     cd fonts && ./install.sh && cd .. && rm -rf fonts/ && \
     pip3 install thefuck && \
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \
-    mkdir /opt/home_skel
+    mkdir /opt/home_skel && chmod 777 /opt/home_skel
 
 ENV LC_ALL=en_US.UTF-8 \
 	SHELL=/bin/zsh
