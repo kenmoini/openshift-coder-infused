@@ -2,7 +2,7 @@ FROM codercom/code-server:latest
 
 USER root
 
-ENV cacheBusta=510
+ENV cacheBusta=410
 
 LABEL io.k8s.display-name="Workshop IDE" \
       io.openshift.expose-services="8080:http" \
@@ -26,17 +26,22 @@ RUN curl -s -o /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v3/clie
     curl -s -o /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/4.1/linux/oc.tar.gz && \
     tar -C /usr/local/bin -zxf /tmp/oc.tar.gz oc && \
     mv /usr/local/bin/oc /usr/local/bin/oc-4.1 && \
-    ln -s /usr/local/bin/oc-4.1 /usr/local/bin/kubectl-1.13 && \
     rm /tmp/oc.tar.gz && \
     curl -s -o /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/4.2/linux/oc.tar.gz && \
     tar -C /usr/local/bin -zxf /tmp/oc.tar.gz oc && \
     mv /usr/local/bin/oc /usr/local/bin/oc-4.2 && \
-    ln -s /usr/local/bin/oc-4.2 /usr/local/bin/kubectl-1.14 && \
     rm /tmp/oc.tar.gz && \
     curl -s -o /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/4.3/linux/oc.tar.gz && \
     tar -C /usr/local/bin -zxf /tmp/oc.tar.gz oc && \
     mv /usr/local/bin/oc /usr/local/bin/oc-4.3 && \
-    ln -s /usr/local/bin/oc-4.3 /usr/local/bin/kubectl-1.16 && \
+    rm /tmp/oc.tar.gz && \
+    curl -s -o /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/4.4/linux/oc.tar.gz && \
+    tar -C /usr/local/bin -zxf /tmp/oc.tar.gz oc && \
+    mv /usr/local/bin/oc /usr/local/bin/oc-4.4 && \
+    rm /tmp/oc.tar.gz && \
+    curl -s -o /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/4.5/linux/oc.tar.gz && \
+    tar -C /usr/local/bin -zxf /tmp/oc.tar.gz oc && \
+    mv /usr/local/bin/oc /usr/local/bin/oc-4.5 && \
     rm /tmp/oc.tar.gz
 
 RUN curl -sL -o /usr/local/bin/odo-0.0.16 https://github.com/openshift/odo/releases/download/v0.0.16/odo-linux-amd64 && \
@@ -53,6 +58,11 @@ RUN curl -sL -o /usr/local/bin/odo-0.0.16 https://github.com/openshift/odo/relea
     tar -C /tmp -xf /tmp/odo.tar.gz && \
     mv /tmp/odo /usr/local/bin/odo-1.0 && \
     chmod +x /usr/local/bin/odo-1.0 && \
+    rm /tmp/odo.tar.gz && \
+    curl -sL -o /tmp/odo.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/odo/v1.2.6/odo-linux-amd64.tar.gz && \
+    tar -C /tmp -xf /tmp/odo.tar.gz && \
+    mv /tmp/odo /usr/local/bin/odo-1.2.6 && \
+    chmod +x /usr/local/bin/odo-1.2.6 && \
     rm /tmp/odo.tar.gz
 
 # Install Kubernetes client.
@@ -65,7 +75,28 @@ RUN curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes
     chmod +x /usr/local/bin/kubectl-1.11 && \
     curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubectl && \
     mv /usr/local/bin/kubectl /usr/local/bin/kubectl-1.12 && \
-    chmod +x /usr/local/bin/kubectl-1.12
+    chmod +x /usr/local/bin/kubectl-1.12 && \
+    curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl && \
+    mv /usr/local/bin/kubectl /usr/local/bin/kubectl-1.13 && \
+    chmod +x /usr/local/bin/kubectl-1.13 && \
+    curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.14.0/bin/linux/amd64/kubectl && \
+    mv /usr/local/bin/kubectl /usr/local/bin/kubectl-1.14 && \
+    chmod +x /usr/local/bin/kubectl-1.14 && \
+    curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl && \
+    mv /usr/local/bin/kubectl /usr/local/bin/kubectl-1.15 && \
+    chmod +x /usr/local/bin/kubectl-1.15 && \
+    curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.16.0/bin/linux/amd64/kubectl && \
+    mv /usr/local/bin/kubectl /usr/local/bin/kubectl-1.16 && \
+    chmod +x /usr/local/bin/kubectl-1.16 && \
+    curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.17.0/bin/linux/amd64/kubectl && \
+    mv /usr/local/bin/kubectl /usr/local/bin/kubectl-1.17 && \
+    chmod +x /usr/local/bin/kubectl-1.17 && \
+    curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kubectl && \
+    mv /usr/local/bin/kubectl /usr/local/bin/kubectl-1.18 && \
+    chmod +x /usr/local/bin/kubectl-1.18 && \
+    curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/linux/amd64/kubectl && \
+    mv /usr/local/bin/kubectl /usr/local/bin/kubectl-1.19 && \
+    chmod +x /usr/local/bin/kubectl-1.19
 
 ENV cacheBustaMid=1
 
