@@ -19,10 +19,6 @@ RUN curl -s -o /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v3/clie
     tar -C /usr/local/bin -zxf /tmp/oc.tar.gz oc && \
     mv /usr/local/bin/oc /usr/local/bin/oc-3.11 && \
     rm /tmp/oc.tar.gz && \
-    curl -s -o /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v3/clients/4.0.22/linux/oc.tar.gz && \
-    tar -C /usr/local/bin -zxf /tmp/oc.tar.gz oc && \
-    mv /usr/local/bin/oc /usr/local/bin/oc-4.0 && \
-    rm /tmp/oc.tar.gz && \
     curl -s -o /tmp/oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/4.1/linux/oc.tar.gz && \
     tar -C /usr/local/bin -zxf /tmp/oc.tar.gz oc && \
     mv /usr/local/bin/oc /usr/local/bin/oc-4.1 && \
