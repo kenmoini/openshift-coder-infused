@@ -2,7 +2,7 @@ FROM codercom/code-server:latest
 
 USER root
 
-ENV cacheBusta=410
+ENV cacheBusta=420
 
 LABEL io.k8s.display-name="Workshop IDE" \
       io.openshift.expose-services="8080:http" \
@@ -145,6 +145,8 @@ COPY config/zshrc /home/coder/.zshrc
 COPY config/zshrc /opt/home_skel/.zshrc
 COPY config/bash_profile /home/coder/.bash_profile
 COPY config/bash_profile /opt/home_skel/.bash_profile
+COPY user-root/ /home/coder/
+COPY user-root/ /opt/home_skel/
 
 USER root
 
