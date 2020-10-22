@@ -153,6 +153,7 @@ USER root
 
 ENV cacheBustaLast=50
 
+COPY container-root/ /
 COPY run.sh /opt/run.sh
 
 RUN chsh --shell $(which zsh) coder && chmod g+w /etc/passwd && chgrp -Rf root /home/coder && chmod -Rf g+w /home/coder && chmod +x /opt/run.sh
