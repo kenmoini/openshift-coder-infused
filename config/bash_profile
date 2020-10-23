@@ -5,6 +5,7 @@ source <(kubectl completion bash)
 # Enable oc bash completion.
 
 source <(oc completion bash)
+alias oc='oc --insecure-skip-tls-verify'
 
 export GOPATH=$HOME/go
 export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
