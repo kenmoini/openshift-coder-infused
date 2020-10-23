@@ -33,7 +33,7 @@
         },
         {
             "name": "VOLUME_CAPACITY",
-            "value": "2Gi",
+            "value": "1Gi",
             "required": true
         }
     ],
